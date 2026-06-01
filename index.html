@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Historia de Datos</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        
+        .header {
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: #fff;
+        }
+
+        /* Contenedor principal del scrollytelling */
+        .scrolly-container {
+            display: flex;
+            position: relative;
+            flex-direction: row-reverse; /* El gráfico a la derecha, texto a la izquierda */
+        }
+
+        /* Columna de texto que se desplaza */
+        .prose-side {
+            width: 40%;
+            padding: 0 5%;
+            z-index: 2;
+        }
+
+        /* Los bloques o "pasos" de la historia */
+        .step {
+            height: 90vh; /* Espacio para obligar al usuario a hacer scroll */
+            display: flex;
+            align-items: center;
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+        
+        /* El paso que está activo se iluminará (esto se controla después con JS) */
+        .step.active {
+            opacity: 1;
+        }
+
+        .step-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Columna del gráfico que se queda FIJA */
+        .visual-side {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 10vh; /* Se congela a 10% del tope de la pantalla */
+            width: 50%;
+            height: 80vh;
+            background: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            margin-right: 5%;
+        }
+
+        .graphic-placeholder {
+            font-size: 24px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .footer {
+            height: 50vh;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Recortes Presupuestarios</h1>
+        <p>Una radiografía a los datos del ministerio. Haz scroll para comenzar.</p>
+    </div>
+
+    <div class="scrolly-container">
+        
+        <div class="visual-side">
+            <div id="graphic" class="graphic-placeholder">
+                [ Aquí irá tu gráfico interactivo ]
+            </div>
+        </div>
+
+        <div class="prose-side">
+            <div class="step active" data-step="1">
+                <div class="step-content">
+                    <h3>Paso 1: El Origen</h3>
+                    <p>En este punto los recursos asignados a la institución se encontraban en su nivel normal al iniciar el año.</p>
+                </div>
+            </div>
+            
+            <div class="step" data-step="2">
+                <div class="step-content">
+                    <h3>Paso 2: El Primer Recorte</h3>
+                    <p>A mediados de año, mediante un decreto del Ministerio de Hacienda, los fondos sufrieron una caída del 15%.</p>
+                </div>
+            </div>
+
+            <div class="step" data-step="3">
+                <div class="step-content">
+                    <h3>Paso 3: El Impacto Final</h3>
+                    <p>Finalmente, así cerró el presupuesto. Las barras del gráfico de al lado se habrían encogido de manera drástica.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>Fin de la visualización · Datos abiertos 2026</p>
+    </div>
+
+</body>
+</html>
