@@ -132,4 +132,47 @@
     </div>
 
 </body>
+<script>
+        // Seleccionamos los elementos de la página
+        const steps = document.querySelectorAll('.step');
+        const graphicText = document.getElementById('graphic');
+        const visualSide = document.querySelector('.visual-side');
+
+        // Configuramos el observador para detectar el scroll
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.6 // Se activa cuando vemos el 60% del bloque de texto
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Quitamos la opacidad alta de los otros pasos
+                    steps.forEach(s => s.classList.remove('active'));
+                    
+                    // Iluminamos el paso actual
+                    entry.target.classList.add('active');
+
+                    // Leemos qué número de paso es
+                    const stepNumber = entry.target.getAttribute('data-step');
+
+                    // Cambiamos el contenido y color del contenedor fijo según el paso
+                    if (stepNumber === "1") {
+                        graphicText.innerText = "📊 Gráfico Inicial: Presupuesto Completo";
+                        visualSide.style.backgroundColor = "#bbdefb"; // Azul claro
+                    } else if (stepNumber === "2") {
+                        graphicText.innerText = "📉 ¡Caída del 15%!";
+                        visualSide.style.backgroundColor = "#ffcc80"; // Naranja
+                    } else if (stepNumber === "3") {
+                        graphicText.innerText = "🚨 Alerta: Recorte Crítico";
+                        visualSide.style.backgroundColor = "#ef9a9a"; // Rojo
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Activamos el detector en cada bloque de texto
+        steps.forEach(step => observer.observe(step));
+    </script>
 </html>
