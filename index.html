@@ -1,178 +1,939 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Historia de Datos</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        
-        .header {
-            height: 60vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: #fff;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bóveda Jurídica · Sistema Integrado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink:       #0f0f0f;
+      --paper:     #f7f4ef;
+      --gold:      #c9a84c;
+      --gold-dim:  #e8d8a8;
+      --red:       #c0392b;
+      --orange:    #d35400;
+      --yellow:    #b7950b;
+      --green:     #1e8449;
+      --cyan:      #1a6fa0;
+      --purple:    #6c3483;
+      --rule:      #d4cfc6;
+      --card:      #ffffff;
+      --card-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
 
-        /* Contenedor principal del scrollytelling */
-        .scrolly-container {
-            display: flex;
-            position: relative;
-            flex-direction: row-reverse; /* El gráfico a la derecha, texto a la izquierda */
-        }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Columna de texto que se desplaza */
-        .prose-side {
-            width: 40%;
-            padding: 0 5%;
-            z-index: 2;
-        }
+    html { scroll-behavior: smooth; }
 
-        /* Los bloques o "pasos" de la historia */
-        .step {
-            height: 90vh; /* Espacio para obligar al usuario a hacer scroll */
-            display: flex;
-            align-items: center;
-            opacity: 0.3;
-            transition: opacity 0.3s;
-        }
-        
-        /* El paso que está activo se iluminará (esto se controla después con JS) */
-        .step.active {
-            opacity: 1;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.7;
+    }
 
-        .step-content {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+    /* ── MASTHEAD ── */
+    .masthead {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 3.5rem 2rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .masthead::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 59px,
+        rgba(255,255,255,0.03) 60px
+      );
+    }
+    .masthead-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    .masthead h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+    .masthead h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .masthead-sub {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: rgba(247,244,239,0.6);
+      letter-spacing: 0.04em;
+    }
+    .version-badge {
+      display: inline-block;
+      margin-top: 1.5rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      background: var(--gold);
+      color: var(--ink);
+      padding: 0.25rem 0.75rem;
+      border-radius: 2px;
+      letter-spacing: 0.1em;
+    }
 
-        /* Columna del gráfico que se queda FIJA */
-        .visual-side {
-            position: -webkit-sticky;
-            position: sticky;
-            top: 10vh; /* Se congela a 10% del tope de la pantalla */
-            width: 50%;
-            height: 80vh;
-            background: #e0e0e0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 12px;
-            margin-right: 5%;
-        }
+    /* ── NAV ── */
+    .sitenav {
+      background: var(--ink);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .sitenav a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(247,244,239,0.55);
+      text-decoration: none;
+      padding: 0.85rem 1.4rem;
+      transition: color 0.2s, border-bottom 0.2s;
+      border-bottom: 2px solid transparent;
+    }
+    .sitenav a:hover {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
 
-        .graphic-placeholder {
-            font-size: 24px;
-            font-weight: bold;
-            color: #666;
-        }
+    /* ── LAYOUT ── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 5rem; }
 
-        .footer {
-            height: 50vh;
-            background: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-    </style>
+    .section { padding: 4rem 0 2rem; }
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .section-rule {
+      width: 3rem;
+      height: 2px;
+      background: var(--gold);
+      margin-bottom: 2rem;
+    }
+    .section-lead {
+      max-width: 680px;
+      color: #444;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── ARCHITECTURE DIAGRAM ── */
+    .arch-diagram {
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 2rem;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 2rem;
+      overflow-x: auto;
+    }
+    .arch-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .arch-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: #888;
+      width: 90px;
+      flex-shrink: 0;
+    }
+    .arch-node {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 3px;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .arch-arrow {
+      color: #bbb;
+      font-size: 0.8rem;
+    }
+    .node-cpr    { background: #fef9f0; border-color: var(--yellow); color: var(--yellow); }
+    .node-bcn    { background: #f0f7ff; border-color: var(--cyan);   color: var(--cyan);   }
+    .node-ced    { background: #fff8f8; border-color: var(--red);    color: var(--red);    }
+    .node-juri   { background: #f3fff0; border-color: var(--green);  color: var(--green);  }
+    .node-canvas { background: #f9f0ff; border-color: var(--purple); color: var(--purple); }
+    .node-epub   { background: #fff5e0; border-color: var(--orange); color: var(--orange); }
+    .node-bridge { background: var(--ink); border-color: var(--gold); color: var(--gold); font-weight: 500; }
+
+    .arch-divider {
+      border: none;
+      border-top: 1px dashed var(--rule);
+      margin: 1rem 0;
+    }
+
+    /* ── COMMAND GRID ── */
+    .cmd-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .cmd-card {
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .cmd-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+    }
+    .cmd-card-accent {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 6px 0 0 6px;
+    }
+    .cmd-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: #aaa;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.2rem;
+    }
+    .cmd-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .cmd-desc {
+      font-size: 0.83rem;
+      color: #555;
+      line-height: 1.55;
+    }
+    .cmd-io {
+      margin-top: 0.7rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+    }
+    .tag-in  { background: #e8f4ff; color: var(--cyan);   }
+    .tag-out { background: #fef0e8; color: var(--orange); }
+    .tag-new { background: var(--gold); color: var(--ink); font-weight: 500; }
+
+    /* ── COLOR PALETTE ── */
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .palette-chip {
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+    .palette-swatch {
+      height: 48px;
+    }
+    .palette-info {
+      background: var(--card);
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--rule);
+      border-top: none;
+    }
+    .palette-code {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      color: #888;
+    }
+    .palette-use {
+      font-size: 0.72rem;
+      color: var(--ink);
+      margin-top: 0.15rem;
+    }
+
+    /* ── CANVAS LAYERS ── */
+    .layers-stack {
+      position: relative;
+      margin: 2rem 0 3rem;
+    }
+    .layer-card {
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1.1rem 1.5rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      box-shadow: var(--card-shadow);
+    }
+    .layer-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold-dim);
+      width: 2rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .layer-body { flex: 1; }
+    .layer-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.15rem;
+    }
+    .layer-desc { font-size: 0.8rem; color: #666; }
+    .layer-ext {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--purple);
+      background: #f9f0ff;
+      border: 1px solid var(--purple);
+      padding: 0.2rem 0.5rem;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .layer-ext-md {
+      color: var(--red);
+      background: #fff8f8;
+      border-color: var(--red);
+    }
+
+    /* ── WIKILINK TABLE ── */
+    .wikilink-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-bottom: 2rem;
+    }
+    .wikilink-table th {
+      background: var(--ink);
+      color: var(--gold);
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.65rem 1rem;
+      text-align: left;
+    }
+    .wikilink-table td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: middle;
+    }
+    .wikilink-table tr:last-child td { border-bottom: none; }
+    .wikilink-table tr:nth-child(even) td { background: #faf9f7; }
+    .wikilink-table code {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      background: #f0f0f0;
+      padding: 0.1rem 0.35rem;
+      border-radius: 2px;
+    }
+
+    /* ── BRIDGE CALLOUT ── */
+    .bridge-callout {
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: 6px;
+      padding: 2rem 2.5rem;
+      margin: 2.5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .bridge-callout::before {
+      content: 'CANVIZAR';
+      position: absolute;
+      right: -0.5rem;
+      top: -0.5rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 7rem;
+      font-weight: 900;
+      color: rgba(255,255,255,0.03);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .bridge-callout h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .bridge-callout p {
+      font-size: 0.88rem;
+      color: rgba(247,244,239,0.75);
+      max-width: 620px;
+      line-height: 1.7;
+    }
+    .bridge-flow {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .flow-step {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.07);
+      color: rgba(247,244,239,0.85);
+    }
+    .flow-step.highlight {
+      background: var(--gold);
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .flow-arrow { color: var(--gold); font-size: 1rem; }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      background: var(--ink);
+      color: rgba(247,244,239,0.4);
+      text-align: center;
+      padding: 2.5rem 1rem;
+      font-size: 0.78rem;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.08em;
+    }
+    .site-footer a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+    .site-footer a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .sitenav a { padding: 0.7rem 0.75rem; font-size: 0.65rem; }
+      .arch-label { display: none; }
+      .layer-num { font-size: 1.4rem; }
+      .bridge-callout { padding: 1.5rem; }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>Recortes Presupuestarios</h1>
-        <p>Una radiografía a los datos del ministerio. Haz scroll para comenzar.</p>
-    </div>
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <p class="masthead-tag">Gabriel Rivera · Proyecto Personal</p>
+    <h1>Bóveda Jurídica<br><em>Sistema Integrado</em></h1>
+    <p class="masthead-sub">Obsidian · Canvas · Chile · Examen de Grado</p>
+    <span class="version-badge">Catedrático v3.0 · Lienzos v1.1</span>
+  </header>
 
-    <div class="scrolly-container">
-        
-        <div class="visual-side">
-            <div id="graphic" class="graphic-placeholder">
-                [ Aquí irá tu gráfico interactivo ]
-            </div>
+  <!-- STICKY NAV -->
+  <nav class="sitenav">
+    <a href="#arquitectura">Arquitectura</a>
+    <a href="#comandos">Comandos</a>
+    <a href="#lienzos">Lienzos</a>
+    <a href="#wikilinks">Wikilinks</a>
+    <a href="#puente">Puente</a>
+  </nav>
+
+  <main class="main">
+
+    <!-- ── SECCIÓN 1 — ARQUITECTURA ── -->
+    <section class="section" id="arquitectura">
+      <p class="section-label">01 — Sistema</p>
+      <h2 class="section-title">Arquitectura del grafo jurídico</h2>
+      <div class="section-rule"></div>
+      <p class="section-lead">
+        La bóveda es un grafo vivo donde cada wikilink es un enlace semántico entre institutos jurídicos.
+        El Catedrático construye la capa textual; Lienzos visualiza la capa espacial.
+        CANVIZAR los conecta sin duplicar.
+      </p>
+
+      <div class="arch-diagram">
+
+        <!-- Nivel 0 -->
+        <div class="arch-row">
+          <span class="arch-label">NIVEL 0</span>
+          <span class="arch-node node-cpr">CPR · norma-fundacional</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node node-cpr">Art. 19 · nodo-derechos-fundamentales</span>
         </div>
 
-        <div class="prose-side">
-            <div class="step active" data-step="1">
-                <div class="step-content">
-                    <h3>Paso 1: El Origen</h3>
-                    <p>En este punto los recursos asignados a la institución se encontraban en su nivel normal al iniciar el año.</p>
-                </div>
-            </div>
-            
-            <div class="step" data-step="2">
-                <div class="step-content">
-                    <h3>Paso 2: El Primer Recorte</h3>
-                    <p>A mediados de año, mediante un decreto del Ministerio de Hacienda, los fondos sufrieron una caída del 15%.</p>
-                </div>
-            </div>
-
-            <div class="step" data-step="3">
-                <div class="step-content">
-                    <h3>Paso 3: El Impacto Final</h3>
-                    <p>Finalmente, así cerró el presupuesto. Las barras del gráfico de al lado se habrían encogido de manera drástica.</p>
-                </div>
-            </div>
+        <!-- Nivel normativo -->
+        <div class="arch-row">
+          <span class="arch-label">NORMATIVO</span>
+          <span class="arch-node node-bcn">BCN_Ley-NNNNN · ley-bcn</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node node-bcn">BCN_CT_Art-NNN · norma-bcn</span>
         </div>
 
-    </div>
+        <!-- Nivel 1 -->
+        <div class="arch-row">
+          <span class="arch-label">NIVEL 1</span>
+          <span class="arch-node node-ced">Civil_NNN · cédula</span>
+          <span class="arch-node node-ced">Laboral_NNN · cédula</span>
+          <span class="arch-node node-ced">Procesal_NNN · cédula</span>
+        </div>
 
-    <div class="footer">
-        <p>Fin de la visualización · Datos abiertos 2026</p>
-    </div>
+        <!-- Jurisprudencia -->
+        <div class="arch-row">
+          <span class="arch-label">JURISPRUD.</span>
+          <span class="arch-node node-juri">PJUD_CS_Rol-NNN-AAAA · jurisprudencia-pjud</span>
+          <span class="arch-arrow">+</span>
+          <span class="arch-node node-juri">.pdf adjunto</span>
+        </div>
+
+        <hr class="arch-divider">
+
+        <!-- Capa visual -->
+        <div class="arch-row">
+          <span class="arch-label">CANVAS</span>
+          <span class="arch-node node-canvas">Capa 0 · Mapa Maestro</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node node-canvas">Capa 1 · Procedimiento</span>
+          <span class="arch-arrow">→</span>
+          <span class="arch-node node-canvas">Capa 2 · Institución</span>
+        </div>
+
+        <!-- Audio -->
+        <div class="arch-row">
+          <span class="arch-label">AUDIO</span>
+          <span class="arch-node node-epub">_MAXIMIN.md · repaso</span>
+          <span class="arch-arrow">+</span>
+          <span class="arch-node node-epub">_AUDIO.epub · Nabuk Regal</span>
+        </div>
+
+        <hr class="arch-divider">
+
+        <!-- Bridge -->
+        <div class="arch-row">
+          <span class="arch-label">PUENTE</span>
+          <span class="arch-node node-bridge">⟷ CANVIZAR (Cmd. 12)</span>
+          <span class="arch-arrow" style="color:var(--gold)">——</span>
+          <span style="font-size:0.78rem;color:#888;">fragmento JSON · conecta .md ↔ .canvas sin duplicar</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── SECCIÓN 2 — COMANDOS ── -->
+    <section class="section" id="comandos">
+      <p class="section-label">02 — Catedrático v3.0</p>
+      <h2 class="section-title">Doce comandos del Catedrático</h2>
+      <div class="section-rule"></div>
+      <p class="section-lead">
+        Cada comando opera en su nivel con precisión quirúrgica: sin contaminar el nivel adyacente,
+        sin mezclar léxicos, sin inventar cédulas que no existen en el ecosistema.
+      </p>
+
+      <div class="cmd-grid">
+
+        <!-- Cmd 1 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--red)"></div>
+          <div class="cmd-number">CMD 01</div>
+          <div class="cmd-name">UNIFICAR</div>
+          <div class="cmd-desc">Transforma una cédula numerada en nota .md de nivel superior. Aplica la Ley del 100%: ningún matiz, plazo o artículo queda fuera.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">Cédula N</span>
+            <span class="tag tag-out">.md Nivel 1</span>
+          </div>
+        </div>
+
+        <!-- Cmd 2 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--red)"></div>
+          <div class="cmd-number">CMD 02</div>
+          <div class="cmd-name">SINTETIZAR</div>
+          <div class="cmd-desc">Produce una nota-sección integradora a partir de todas las cédulas de una Sección. No unifica: integra, correlaciona y eleva el conjunto.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">Sección completa</span>
+            <span class="tag tag-out">.md Integrador</span>
+          </div>
+        </div>
+
+        <!-- Cmd 3 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--orange)"></div>
+          <div class="cmd-number">CMD 03</div>
+          <div class="cmd-name">MAXIMIZAR</div>
+          <div class="cmd-desc">Síntesis de máxima eficiencia para repaso de último momento. Criterio MAXIMIN: máximo de información jurídicamente relevante con el mínimo de palabras.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">Cédula / Bloque / Sección</span>
+            <span class="tag tag-out">.md + .epub</span>
+          </div>
+        </div>
+
+        <!-- Cmd 4 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--cyan)"></div>
+          <div class="cmd-number">CMD 04</div>
+          <div class="cmd-name">CONVALIDAR</div>
+          <div class="cmd-desc">Adecúa una nota atómica existente al estándar canónico. Interviene solo en YAML, nombre de archivo, wikilinks y navegación. Preserva el 100% del contenido.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">Nota atómica</span>
+            <span class="tag tag-out">.md corregido</span>
+          </div>
+        </div>
+
+        <!-- Cmd 5 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--cyan)"></div>
+          <div class="cmd-number">CMD 05</div>
+          <div class="cmd-name">INCORPORAR</div>
+          <div class="cmd-desc">Ancla una nota temática transversal al ecosistema. Produce diagnóstico previo, YAML canónico, barra de anclaje e instrucción de backlinks.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">Nota huérfana</span>
+            <span class="tag tag-out">.md anclado</span>
+          </div>
+        </div>
+
+        <!-- Cmd 6 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--cyan)"></div>
+          <div class="cmd-number">CMD 06</div>
+          <div class="cmd-name">NORMALIZAR</div>
+          <div class="cmd-desc">Recibe nota BCN de un artículo y la transforma en nodo de fuente primaria con cinco capas de anotación: núcleo dogmático, historial, análisis estructural, advertencias y doctrina.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">Nota BCN art.</span>
+            <span class="tag tag-out">.md norma-bcn</span>
+          </div>
+        </div>
+
+        <!-- Cmd 7 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--orange)"></div>
+          <div class="cmd-number">CMD 07</div>
+          <div class="cmd-name">PUBLICAR</div>
+          <div class="cmd-desc">Transforma cualquier nota existente en .epub optimizado para lectura en voz alta en el Nabuk Regal. Aplica Test MAXIMIN.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">Cualquier nota</span>
+            <span class="tag tag-out">.epub Nabuk</span>
+          </div>
+        </div>
+
+        <!-- Cmd 8 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--cyan)"></div>
+          <div class="cmd-number">CMD 08</div>
+          <div class="cmd-name">LEGALIZAR</div>
+          <div class="cmd-desc">Convierte una nota BCN de ley completa en cédula panorámica ley-bcn. Produce ficha técnica, resumen ejecutivo, estructura normativa y cuatro capas de anotación.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">Nota BCN ley</span>
+            <span class="tag tag-out">.md ley-bcn</span>
+          </div>
+        </div>
+
+        <!-- Cmd 9 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--yellow)"></div>
+          <div class="cmd-number">CMD 09</div>
+          <div class="cmd-name">CONSTITUCIONALIZAR</div>
+          <div class="cmd-desc">Genera la nota-raíz CPR como Nivel 0 del grafo. Cubre supremacía constitucional, cláusula DIDH (Art. 5° inc. 2°), los 15 Capítulos y siete tratados internacionales obligatorios.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">DS N° 100</span>
+            <span class="tag tag-out">.md norma-fundacional</span>
+          </div>
+        </div>
+
+        <!-- Cmd 10 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--yellow)"></div>
+          <div class="cmd-number">CMD 10</div>
+          <div class="cmd-name">ART19_INTERNACIONAL</div>
+          <div class="cmd-desc">Nota especial del Art. 19 CPR como Nivel 0-A. Sistematiza los 26 numerales con correlación a CADH, PIDCP, PIDESC y DUDH numeral por numeral.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">Art. 19 + DIDH</span>
+            <span class="tag tag-out">.md nodo-der-fund.</span>
+          </div>
+        </div>
+
+        <!-- Cmd 11 -->
+        <div class="cmd-card">
+          <div class="cmd-card-accent" style="background:var(--green)"></div>
+          <div class="cmd-number">CMD 11</div>
+          <div class="cmd-name">JURISPRUDENCIAR</div>
+          <div class="cmd-desc">Transforma nota cruda del PJUD en nota jurisprudencial de nivel superior con cinco capas: holding, ratio decidendi, obiter dicta, advertencias y contexto. El PDF se enlaza como adjunto interno.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">.md PJUD + PDF</span>
+            <span class="tag tag-out">.md jurisprudencia-pjud</span>
+          </div>
+        </div>
+
+        <!-- Cmd 12 — NUEVO -->
+        <div class="cmd-card" style="border-color:var(--gold)">
+          <div class="cmd-card-accent" style="background:var(--gold)"></div>
+          <div class="cmd-number">CMD 12 <span class="tag tag-new">NUEVO v3.0</span></div>
+          <div class="cmd-name">CANVIZAR</div>
+          <div class="cmd-desc">Convierte el output de cualquier comando (1–11) o una nota existente en un fragmento JSON de nodo listo para pegar en un .canvas de Lienzos v1.1. Puente operativo entre capa textual y capa visual.</div>
+          <div class="cmd-io">
+            <span class="tag tag-in">Cualquier nota</span>
+            <span class="tag tag-out">JSON · nodo canvas</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── SECCIÓN 3 — LIENZOS ── -->
+    <section class="section" id="lienzos">
+      <p class="section-label">03 — Lienzos v1.1</p>
+      <h2 class="section-title">Capas del sistema visual</h2>
+      <div class="section-rule"></div>
+      <p class="section-lead">
+        Los canvas son las moléculas que conectan los átomos del Catedrático.
+        Cuatro capas de zoom semántico desde la vista satélite hasta el concepto atómico.
+      </p>
+
+      <div class="layers-stack">
+        <div class="layer-card">
+          <div class="layer-num">0</div>
+          <div class="layer-body">
+            <div class="layer-title">CAPA MACRO — Vista satélite de la materia</div>
+            <div class="layer-desc">Visión de conjunto. Ej: <code>Mapa_Derecho_Laboral.canvas</code> · 9–12 nodos recomendados</div>
+          </div>
+          <span class="layer-ext">.canvas</span>
+        </div>
+        <div class="layer-card">
+          <div class="layer-num">1</div>
+          <div class="layer-body">
+            <div class="layer-title">CAPA MESO — Procedimiento o institución principal</div>
+            <div class="layer-desc">Ej: <code>01_Procedimiento_General.canvas</code> · flujo completo con fases</div>
+          </div>
+          <span class="layer-ext">.canvas</span>
+        </div>
+        <div class="layer-card">
+          <div class="layer-num">2</div>
+          <div class="layer-body">
+            <div class="layer-title">CAPA MICRO — Institución específica</div>
+            <div class="layer-desc">Ej: <code>04_Audiencia_Preparatoria.canvas</code> · ≥5 nodos con relaciones no lineales</div>
+          </div>
+          <span class="layer-ext">.canvas</span>
+        </div>
+        <div class="layer-card">
+          <div class="layer-num">3</div>
+          <div class="layer-body">
+            <div class="layer-title">CAPA NANO — Concepto atómico</div>
+            <div class="layer-desc">Producido por el Catedrático v3.0. Las cédulas .md son los átomos que los canvas conectan.</div>
+          </div>
+          <span class="layer-ext layer-ext-md">.md</span>
+        </div>
+        <div class="layer-card" style="border-color:var(--purple);">
+          <div class="layer-num" style="color:var(--purple);opacity:0.4">⊕</div>
+          <div class="layer-body">
+            <div class="layer-title">EJE TRANSVERSAL — Principios en todas las capas</div>
+            <div class="layer-desc">Ej: <code>Principios_Transversales.canvas</code> · atraviesa todas las materias</div>
+          </div>
+          <span class="layer-ext">.canvas</span>
+        </div>
+      </div>
+
+      <!-- Paleta de colores -->
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.1rem;margin-bottom:1rem;">Paleta semántica</h3>
+      <div class="palette-grid">
+        <div class="palette-chip">
+          <div class="palette-swatch" style="background:var(--red)"></div>
+          <div class="palette-info">
+            <div class="palette-code">"1" · Rojo</div>
+            <div class="palette-use">Demanda · fase inicial</div>
+          </div>
+        </div>
+        <div class="palette-chip">
+          <div class="palette-swatch" style="background:var(--orange)"></div>
+          <div class="palette-info">
+            <div class="palette-code">"2" · Naranja</div>
+            <div class="palette-use">Recursos · impugnación</div>
+          </div>
+        </div>
+        <div class="palette-chip">
+          <div class="palette-swatch" style="background:var(--yellow)"></div>
+          <div class="palette-info">
+            <div class="palette-code">"3" · Amarillo</div>
+            <div class="palette-use">Audiencias · debate oral</div>
+          </div>
+        </div>
+        <div class="palette-chip">
+          <div class="palette-swatch" style="background:var(--green)"></div>
+          <div class="palette-info">
+            <div class="palette-code">"4" · Verde</div>
+            <div class="palette-use">Ejecución · efectos</div>
+          </div>
+        </div>
+        <div class="palette-chip">
+          <div class="palette-swatch" style="background:var(--cyan)"></div>
+          <div class="palette-info">
+            <div class="palette-code">"5" · Cyan</div>
+            <div class="palette-use">Prueba · cautelares</div>
+          </div>
+        </div>
+        <div class="palette-chip">
+          <div class="palette-swatch" style="background:var(--purple)"></div>
+          <div class="palette-info">
+            <div class="palette-code">"6" · Púrpura</div>
+            <div class="palette-use">Nav · header · principios</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECCIÓN 4 — WIKILINKS ── -->
+    <section class="section" id="wikilinks">
+      <p class="section-label">04 — Convención única v4.0</p>
+      <h2 class="section-title">Tipos de wikilinks</h2>
+      <div class="section-rule"></div>
+      <p class="section-lead">
+        Siete tipos. Confundirlos rompe los enlaces en Obsidian.
+        Nunca usar espacios en el destino de un wikilink Tipo B–G.
+      </p>
+
+      <div style="overflow-x:auto;">
+        <table class="wikilink-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Destino</th>
+              <th>Formato obligatorio</th>
+              <th>Ejemplo correcto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>A</strong></td>
+              <td>Artículos y leyes</td>
+              <td>Texto plano con abreviatura estándar</td>
+              <td><code>Art. 1546 CC</code> · <code>Art. 446 CT</code></td>
+            </tr>
+            <tr>
+              <td><strong>B</strong></td>
+              <td>Cédulas individuales y notas atómicas</td>
+              <td><code>[[Materia_NNN_Tema_Sin_Espacios|alias]]</code></td>
+              <td><code>[[Civil_006_Principio_de_la_Buena_Fe|006 · Buena Fe]]</code></td>
+            </tr>
+            <tr>
+              <td><strong>C</strong></td>
+              <td>Notas-sección integradoras</td>
+              <td><code>[[Materia_Bloque-I_Seccion-1_Nombre|alias]]</code></td>
+              <td><code>[[Civil_Bloque-I_Seccion-1_Fuentes|I.1 · Fuentes]]</code></td>
+            </tr>
+            <tr>
+              <td><strong>D</strong></td>
+              <td>Notas BCN de artículo</td>
+              <td><code>[[BCN_[CÓDIGO]_Art-[NNN]_[Tema]|alias]]</code></td>
+              <td><code>[[BCN_CT_Art-485_Tutela_Laboral|Art. 485 CT]]</code></td>
+            </tr>
+            <tr>
+              <td><strong>E</strong></td>
+              <td>Notas ley-bcn</td>
+              <td><code>[[BCN_[TIPO]-[NRO]_[Nombre]|alias]]</code></td>
+              <td><code>[[BCN_Ley-18834_Estatuto_Administrativo|Ley N° 18.834]]</code></td>
+            </tr>
+            <tr>
+              <td><strong>F</strong></td>
+              <td>Nodos constitucionales</td>
+              <td><code>[[CPR_[Identificador_Sin_Espacios]|alias]]</code></td>
+              <td><code>[[CPR_Art19_Derechos_Fundamentales|Art. 19 CPR]]</code></td>
+            </tr>
+            <tr>
+              <td><strong>G</strong></td>
+              <td>Notas jurisprudencia PJUD</td>
+              <td><code>[[PJUD_[TRIB-ABREV]_Rol-[NNN-AAAA]_[Tema]|alias]]</code></td>
+              <td><code>[[PJUD_CS_Rol-17949-2025_Prescripcion_CAE|Rol 17.949-2025 CS]]</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── SECCIÓN 5 — PUENTE ── -->
+    <section class="section" id="puente">
+      <p class="section-label">05 — CANVIZAR · Cmd. 12</p>
+      <h2 class="section-title">El puente entre capas</h2>
+      <div class="section-rule"></div>
+
+      <p class="section-lead">
+        La fricción principal de v2.x era que los canvas de Lienzos usaban el formato visual
+        ("Artículo 446 Código del Trabajo") como destino de wikilink. Esas notas no existían
+        en la bóveda → enlace morado → grafo fragmentado. CANVIZAR resuelve esto.
+      </p>
+
+      <div class="bridge-callout">
+        <h3>CANVIZAR — Comando 12</h3>
+        <p>
+          Convierte el output de cualquier comando (1–11) o cualquier nota existente en un
+          fragmento JSON de nodo canvas válido. Los wikilinks dentro del nodo usan siempre
+          el nombre canónico de la bóveda (Tipos A–G), nunca el formato visual. El canvas
+          muestra el alias visual; la bóveda enlaza a la nota real.
+        </p>
+        <div class="bridge-flow">
+          <span class="flow-step">UNIFICAR Laboral 42</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">.md Laboral_042_La_Demanda</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step highlight">CANVIZAR output</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">fragmento JSON</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">pegar en 02_La_Demanda.canvas</span>
+        </div>
+      </div>
+
+      <p style="color:#555;font-size:0.87rem;line-height:1.7;max-width:680px;">
+        La <strong>Tabla Puente</strong> en Lienzos v1.1 mapea cada nombre canónico de la bóveda
+        con su alias visual en canvas. Se amplía con cada nueva nota normalizada o unificada.
+        El resultado: ningún enlace roto, ningún nodo morado, y ambas capas del sistema hablan
+        el mismo idioma sin duplicar contenido.
+      </p>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>Gabriel Rivera · <a href="https://redesgabrielrivera.github.io/">redesgabrielrivera.github.io</a></p>
+    <p style="margin-top:0.4rem;">Catedrático Jurídico Chileno v3.0 · Lienzos Jurídicos v1.1 · 2026-06-01</p>
+    <p style="margin-top:0.4rem; opacity:0.5;">Generado con Claude · Anthropic</p>
+  </footer>
 
 </body>
-<script>
-        // Seleccionamos los elementos de la página
-        const steps = document.querySelectorAll('.step');
-        const graphicText = document.getElementById('graphic');
-        const visualSide = document.querySelector('.visual-side');
-
-        // Configuramos el observador para detectar el scroll
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.6 // Se activa cuando vemos el 60% del bloque de texto
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Quitamos la opacidad alta de los otros pasos
-                    steps.forEach(s => s.classList.remove('active'));
-                    
-                    // Iluminamos el paso actual
-                    entry.target.classList.add('active');
-
-                    // Leemos qué número de paso es
-                    const stepNumber = entry.target.getAttribute('data-step');
-
-                    // Cambiamos el contenido y color del contenedor fijo según el paso
-                    if (stepNumber === "1") {
-                        graphicText.innerText = "📊 Gráfico Inicial: Presupuesto Completo";
-                        visualSide.style.backgroundColor = "#bbdefb"; // Azul claro
-                    } else if (stepNumber === "2") {
-                        graphicText.innerText = "📉 ¡Caída del 15%!";
-                        visualSide.style.backgroundColor = "#ffcc80"; // Naranja
-                    } else if (stepNumber === "3") {
-                        graphicText.innerText = "🚨 Alerta: Recorte Crítico";
-                        visualSide.style.backgroundColor = "#ef9a9a"; // Rojo
-                    }
-                }
-            });
-        }, observerOptions);
-
-        // Activamos el detector en cada bloque de texto
-        steps.forEach(step => observer.observe(step));
-    </script>
 </html>
